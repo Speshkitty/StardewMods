@@ -1,0 +1,10 @@
+{
+  "Name": "Improved Bundle Remixer",
+  "Author": "Speshkitty",
+  "Description": "Remixes the remixed bundles",
+  "EntryDLL": "ImprovedBundleRemixer.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UniqueID": "speshkitty.improvedbundleremixer",
+  "UpdateKeys": [ "Nexus:???" ],
+  "Version": "1.0.0"
+}
