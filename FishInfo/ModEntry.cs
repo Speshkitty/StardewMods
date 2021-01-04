@@ -1,7 +1,7 @@
 ﻿using StardewModdingAPI;
+using StardewValley;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace FishInfo
 {
@@ -18,11 +18,15 @@ namespace FishInfo
         {
             ModEntry.Helper = helper;
             ModEntry.Monitor = base.Monitor;
-            Config = Helper.ReadConfig<ModConfig>();
-            Helper.WriteConfig(Config);
+
+            LoadConfig();
             Patches.DoPatches();
 
-            //Helper.Events.GameLoop.SaveLoaded += LoadData;
+            Logger.LogDebug(Game1.getTimeOfDayString(0));
+            Logger.LogDebug(Game1.getTimeOfDayString(600));
+            Logger.LogDebug(Game1.getTimeOfDayString(1200));
+            Logger.LogDebug(Game1.getTimeOfDayString(1800));
+
             Helper.Events.GameLoop.DayStarted += LoadData;
         }
 
@@ -39,12 +43,22 @@ namespace FishInfo
             }
         }
 
+        private void LoadConfig()
+        {
+            ModConfig ReadConfig = Helper.ReadConfig<ModConfig>();
+
+            if(ReadConfig.Equals(new ModConfig()))
+            {
+                Helper.WriteConfig(ReadConfig);
+            }
+
+            Config = ReadConfig;
+        }
+
         public void LoadData(object sender, EventArgs e)
         {
-            StopwatchCollection.CreateAndStartStopwatch("LoadData");
             FishInfo.Clear();
 
-            StopwatchCollection.CreateAndStartStopwatch("LocationData");
             Dictionary<string, string> LocationData = Helper.Content.Load<Dictionary<string, string>>("Data\\Locations", ContentSource.GameContent);
             foreach (KeyValuePair<string, string> locdata in LocationData)
             {
@@ -54,8 +68,7 @@ namespace FishInfo
 
                 string[] data = locdata.Value.Split('/');
 
-                //if (locationName == "BugLand") locationName = "MutantBugLair"; //fucking bugland lmao
-
+                
                 /*
                  * Sample data line
                  * "Desert": "88 .5 90 .5/88 .5 90 .5/88 .5 90 .5/88 .5 90 .5/153 -1 164 -1 165 -1/153 -1 164 -1 165 -1/153 -1 164 -1 165 -1/153 -1 164 -1 165 -1/390 .25 330 1",
@@ -68,11 +81,10 @@ namespace FishInfo
                  * 
                  * 
                  */
-
+                 
                 string[] seasonData;
                 for (int i = 4; i <= 7; i++)
                 {
-                    //StopwatchCollection.CreateAndStartStopwatch($"SeasonData{locationName}{i}");
                     
                     if(string.CompareOrdinal(data[i], "-1") == 0)
                     {
@@ -91,7 +103,7 @@ namespace FishInfo
                     {
                         string NextFish = testQueue.Dequeue();
                         if (NextFish == "-1") continue; // If the fish ID taken from the list is -1, skip it
-
+                        
                         if(NextFish == "1069-1") //This is the fix for the issue with More New Fish on Spirit's Eve
                         {
                             FishID = 1069;
@@ -112,37 +124,31 @@ namespace FishInfo
 
                         fd = GetOrCreateData(FishID);
 
-                        if(string.CompareOrdinal(locationName, "Forest") == 0)
+                        Season currentSeason = (Season)(1 << (i - 4));
+                        if (string.CompareOrdinal(locationName, "Forest") == 0)
                         {
                             if (ForestRegion == -1)
                             {
-                                fd.AddLocation("ForestRiver");
-                                fd.AddLocation("ForestPond");
+                                fd.AddSeasonForLocation("ForestRiver", currentSeason);
+                                fd.AddSeasonForLocation("ForestPond", currentSeason);
                             }
                             else if (ForestRegion == 0)
                             {
-                                fd.AddLocation("ForestRiver");
+                                fd.AddSeasonForLocation("ForestRiver", currentSeason);
                             }
                             else
                             {
-                                fd.AddLocation("ForestPond");
+                                fd.AddSeasonForLocation("ForestPond", currentSeason);
                             }
                         }
                         else
                         {
-                            fd.AddLocation(locationName);
+                            fd.AddSeasonForLocation(locationName, currentSeason);
                         }
-
-                        fd.AddSeason((Season)(1 << (i - 4)));
                     }
-                    
-                    //StopwatchCollection.StopStopwatchAndGetTime($"SeasonData{locationName}{i}");
                 }
 
             }
-            StopwatchCollection.StopStopwatchAndGetTime("LocationData");
-
-            StopwatchCollection.CreateAndStartStopwatch("FishData");
             Dictionary<int, string> FishData = Helper.Content.Load<Dictionary<int, string>>("Data\\Fish", ContentSource.GameContent);
             foreach (KeyValuePair<int, string> fishData in FishData)
             {
@@ -150,7 +156,6 @@ namespace FishInfo
                 string[] fishInfo = fishData.Value.Split('/');
 
                 FishData fd = GetOrCreateData(FishID);
-
                 if (fishInfo.Length == 14)
                 {
                     fd.FishName = fishInfo[13];
@@ -172,7 +177,7 @@ namespace FishInfo
                 if (string.CompareOrdinal(fishInfo[1], "trap") == 0) //crabpot
                 {
                     fd.IsCrabPot = true;
-                    fd.AddLocation(fishInfo[4]);
+                    fd.AddSeasonForLocation(fishInfo[4], Season.None);
                 }
                 else
                 {
@@ -193,22 +198,6 @@ namespace FishInfo
                     }
                 }
             }
-            StopwatchCollection.StopStopwatchAndGetTime("FishData");
-
-            StopwatchCollection.StopStopwatchAndGetTime("LoadData");
-        }
-
-        private void ParseInts(string StepInLoop, string NextStepInLoop, out int FishID, out int region)
-        {
-            
-            if (string.CompareOrdinal(StepInLoop, "1069-1") == 0) //Terrible hacky fix for issue that only occurs on spirit's eve when More new Fish is installed
-            {
-                FishID = 1069;
-                region = -1;
-                return;
-            }
-            FishID = int.Parse(StepInLoop);
-            region = int.Parse(NextStepInLoop);
         }
     }
 }

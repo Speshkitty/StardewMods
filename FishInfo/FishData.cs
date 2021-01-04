@@ -10,35 +10,135 @@ namespace FishInfo
 {
     internal class FishData
     {
-        internal List<string> CaughtIn;
-        internal List<TimePair> CatchingTimes;
-        internal Weather weather;
-        internal bool IsCrabPot;
-        internal Season season;
-        internal string InfoLocation;
-        internal string InfoSeason;
-        internal string InfoWeather;
-        internal string InfoTime;
-        internal string FishName;
+        internal Dictionary<string, Season> LocationData = new Dictionary<string, Season>();
+        internal List<TimePair> CatchingTimes = new List<TimePair>();
+        internal Weather weather = Weather.None;
 
-        public FishData()
-        {
-            CaughtIn = new List<string>();
-            CatchingTimes = new List<TimePair>();
-            weather = Weather.None;
-            IsCrabPot = false;
-            season = Season.None;
-            FishName = "";
-        }
+        internal string FishName { get; set; }
+        internal bool IsCrabPot = false;
 
-        internal void AddLocation(string location)
+        private string infoLocation = "";
+        private string infoWeather = "";
+        private string infoTime = "";
+        private string infoSeasons = "";
+        private string infoLocationSeasons = "";
+
+        internal string InfoLocation
         {
-            if (!CaughtIn.Contains(location))
+            get
             {
-                CaughtIn.Add(location);
-                InfoLocation = "";
+                if (string.IsNullOrWhiteSpace(infoLocation))
+                {
+                    CreateLocationString();
+                }
+                return infoLocation;
             }
+            private set => infoLocation = value;
         }
+        internal string InfoWeather
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(infoWeather))
+                {
+                    CreateWeatherString();
+                }
+                return infoWeather;
+            }
+            private set => infoWeather = value;
+        }
+        internal string InfoTime
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(infoTime))
+                {
+                    CreateTimeString();
+                }
+                return infoTime;
+            }
+            private set => infoTime = value;
+        }
+        internal string InfoSeason
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(infoSeasons))
+                {
+                    CreateSeasonString();
+                }
+                return infoSeasons;
+            }
+            private set => infoSeasons = value;
+
+        }
+        internal string InfoSeasonsWithLocations
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(infoLocationSeasons))
+                {
+                    CreateSeasonsWithLocations();
+                }
+                return infoLocationSeasons;
+            }
+            private set => infoLocationSeasons = value;
+
+        }
+
+        private void CreateSeasonString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine($"{Translation.GetString("season.prefix")}:".AsGameText());
+            sb.Append($"  {LocationData.Values.Distinct().Join(new Func<Season, string>(Translation.GetString))}".AsGameText());
+            InfoSeason = sb.ToString();
+        }
+        private void CreateWeatherString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine($"{Translation.GetString("weather.prefix")}:".AsGameText());
+            sb.AppendLine($"  {Translation.GetString(weather)}".AsGameText());
+
+            InfoWeather = sb.ToString();
+        }
+        private void CreateTimeString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine($"{Translation.GetString("time.prefix")}:".AsGameText());
+
+            List<string> strings = new List<string>();
+            foreach (TimePair times in CatchingTimes)
+            {
+                strings.Add($"{Game1.getTimeOfDayString(times.StartTime)} - {Game1.getTimeOfDayString(times.EndTime)}");
+            }
+            sb.AppendLine($"  {strings.Join()}".AsGameText());
+
+            InfoTime = sb.ToString();
+        }
+        private void CreateSeasonsWithLocations()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine("Caught in:");
+            foreach (Season s in LocationData.Values.Distinct())
+            {
+                sb.AppendLine($"  {Translation.GetString(s)}".AsGameText());
+                List<string> locs = new List<string>();
+                foreach (var v in LocationData.Where(x => x.Value == s))
+                {
+                    locs.Add(v.Key);
+                }
+
+                sb.Append($"    {locs.Join(Translation.GetLocationName).AsGameText()}");
+                sb.AppendLine();
+            }
+
+            infoLocationSeasons= sb.ToString();
+        }
+
         internal void AddTimes(int StartTime, int EndTime)
         {
             TimePair times = new TimePair(StartTime, EndTime);
@@ -56,82 +156,31 @@ namespace FishInfo
                 InfoWeather = "";
             }
         }
-        internal void AddSeason(Season season)
+        
+        internal void AddSeasonForLocation(string location, Season season)
         {
-            if (!this.season.HasFlag(season))
+            if (!LocationData.ContainsKey(location))
             {
-                this.season |= season;
-                InfoSeason = "";
+                LocationData.Add(location, season);
+            }
+            else
+            {
+                LocationData[location] |= season;
             }
         }
+        
         internal void SetCrabPot(bool IsCrabPot)
         {
             this.IsCrabPot = IsCrabPot;
         }
-
-        private string CalcEachTimeString(int time)
-        {
-            if (time == 1200)
-            {
-                return Translation.GetString("time.midday");
-            }
-            else if (time == 2400)
-            {
-                return Translation.GetString("time.midnight");
-            }
-            else if (time < 1200)
-            {
-                return FormatTime(time) + Translation.BaseGameTranslation("Strings\\StringsFromCSFiles:DayTimeMoneyBox.cs.10370");
-            }
-            else if (time < 2400)
-            {
-                return FormatTime(time - 1200) + Translation.BaseGameTranslation("Strings\\StringsFromCSFiles:DayTimeMoneyBox.cs.10371");
-            }
-            else
-            {
-                return FormatTime(time - 2400) + Translation.BaseGameTranslation("Strings\\StringsFromCSFiles:DayTimeMoneyBox.cs.10370");
-            }
-        }
-
-        private string FormatTime(int time)
-        {
-            string sTime = time.ToString();
-
-            if (sTime.Length == 3)
-            {
-                sTime = sTime.Insert(1, ":");
-            }
-            else if (sTime.Length == 1)
-            {
-                sTime = $"0{sTime}:00";
-            }
-            else
-            {
-                sTime = sTime.Insert(2, ":");
-            }
-
-            return sTime;
-        }
-
-        private string CalcTimeString()
-        {
-            if (CatchingTimes.Count == 1 && CatchingTimes[0].StartTime == 600 && CatchingTimes[0].EndTime == 2600)
-            {
-                return Translation.GetString("time.allday");
-            }
-            List<string> strings = new List<string>();
-            foreach (TimePair times in CatchingTimes)
-            {
-                strings.Add($"{CalcEachTimeString(times.StartTime)} - {CalcEachTimeString(times.EndTime)}");
-            }
-            return strings.Join();
-        }
-
+        
         internal void CreateLocationString()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine();
+
+            
 
             if (IsCrabPot)
             {
@@ -140,7 +189,7 @@ namespace FishInfo
                         "location.crabpot",
                         new
                         {
-                            location = CaughtIn.Join(new Func<string, string>(Translation.GetLocationName))
+                            location = LocationData.Keys.Join(new Func<string, string>(Translation.GetLocationName))
                         }
                     )
                 );
@@ -150,72 +199,29 @@ namespace FishInfo
                 sb.AppendLine($"{Translation.GetString("location.prefix")}:");
                 sb.Append("  ");
 
-                if (CaughtIn.Count == 0)
+                if (LocationData.Count == 0)
                 {
                     sb.AppendLine(Translation.GetString("location.none"));
                 }
                 else
                 {
-                    sb.AppendLine(Game1.parseText(CaughtIn.Join(new Func<string, string>(Translation.GetLocationName)), Game1.smallFont, 256));
+                    
+                    sb.AppendLine(LocationData.Keys.Join(new Func<string, string>(Translation.GetLocationName)).AsGameText());
                 }
 
             }
 
             InfoLocation = sb.ToString();
         }
-
-        internal void CreateWeatherString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine(Game1.parseText($"{Translation.GetString("weather.prefix")}:", Game1.smallFont, 256));
-            sb.AppendLine(Game1.parseText($"  {Translation.GetString(weather)}", Game1.smallFont, 256));
-
-            InfoWeather = sb.ToString();
-        }
-
-        internal void CreateTimeString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine(Game1.parseText($"{Translation.GetString("time.prefix")}:", Game1.smallFont, 256));
-            sb.AppendLine(Game1.parseText($"  {CalcTimeString()}", Game1.smallFont, 256));
-
-            InfoTime = sb.ToString();
-        }
-
-        internal void CreateSeasonString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine(Game1.parseText($"{Translation.GetString("season.prefix")}:", Game1.smallFont, 256));
-
-            sb.AppendLine(Game1.parseText($"  {Translation.GetString(season)}", Game1.smallFont, 256));
-
-            InfoSeason = sb.ToString();
-        }
-
+        
         public override string ToString()
         {
+            StringBuilder sb = new StringBuilder(FishName);
+            sb.AppendLine();
+            return base.ToString();
 
-            if (InfoLocation is null || InfoLocation == string.Empty)
-            {
-                CreateLocationString();
-            }
-            if ((InfoSeason is null || InfoSeason == string.Empty) && !IsCrabPot)
-            {
-                CreateSeasonString();
-            }
-            if ((InfoTime is null || InfoTime == string.Empty) && !IsCrabPot)
-            {
-                CreateTimeString();
-            }
-            if ((InfoWeather is null || InfoWeather == string.Empty) && !IsCrabPot)
-            {
-                CreateWeatherString();
-            }
-
-            return FishName + Environment.NewLine + InfoLocation + InfoSeason + InfoTime + InfoWeather;
+            //return FishName + Environment.NewLine +
+            //InfoLocation + InfoSeason + InfoTime + InfoWeather;
         }
     }
 }
