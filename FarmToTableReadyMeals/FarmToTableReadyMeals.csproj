@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CookingRecipe.cs" />
+    <Compile Include="CookingRecipeAssetEditor.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ModEntry.cs" />
