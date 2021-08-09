@@ -21,12 +21,7 @@ namespace FishInfo
 
             LoadConfig();
             Patches.DoPatches();
-
-            Logger.LogDebug(Game1.getTimeOfDayString(0));
-            Logger.LogDebug(Game1.getTimeOfDayString(600));
-            Logger.LogDebug(Game1.getTimeOfDayString(1200));
-            Logger.LogDebug(Game1.getTimeOfDayString(1800));
-
+            
             Helper.Events.GameLoop.DayStarted += LoadData;
         }
 
