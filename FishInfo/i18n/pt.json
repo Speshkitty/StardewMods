@@ -1,0 +1,24 @@
+﻿//Portuguese translation provided by IanSinGShau
+//https://github.com/Iann29/Stardew-Valley-Translations/blob/main/FishInfo/pt.json
+{
+  "location.prefix": "Pego em",
+  "location.none": "Desconhecido - Minas/Eventos?",
+  "location.crabpot": "Pote de caranguejo em: {{location}}",
+  "location.ocean": "Oceano",
+  "location.freshwater": "Freshwater",
+  "location.forestriver": "Rio da Floresta",
+  "location.forestpond": "Lago da Floresta",
+  "location.bugland": "Covil dos Insetos Mutantes",
+  "location.witchswamp": "Pântano da Bruxa",
+  "season.prefix": "Estação",
+  "season.all": "Todas estações",
+  "season.none": "Nenhuma entrada encontrada",
+  "time.prefix": "Tempo",
+  "time.allday": "Todos os dias",
+  "time.midday": "Meio-dia",
+  "time.midnight": "Meia-noite",
+  "weather.prefix": "Clima",
+  "weather.sun": "Sol",
+  "weather.rain": "Chuva",
+  "weather.none": "Nenhuma entrada encontrada"
+}
