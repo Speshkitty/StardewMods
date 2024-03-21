@@ -1,5 +1,4 @@
-﻿using Harmony;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +41,7 @@ namespace FishInfo
         internal static string GetString(Season s)
         {
             string toReturn = "";
-            if (s == Season.All_seasons)
+            if (s.HasFlag(Season.Spring) && s.HasFlag(Season.Summer) && s.HasFlag(Season.Fall) && s.HasFlag(Season.Winter))
             {
                 return GetString("season.all");
             }

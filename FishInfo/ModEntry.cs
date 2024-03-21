@@ -1,13 +1,15 @@
 ﻿using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.Locations;
+using StardewValley.GameData.Objects;
 using System;
 using System.Collections.Generic;
 
 namespace FishInfo
 {
-    public class ModEntry : StardewModdingAPI.Mod
+    public class ModEntry : Mod
     {
-        internal static Dictionary<int, FishData> FishInfo = new Dictionary<int, FishData>();
+        internal static Dictionary<string, FishData> FishInfo = new Dictionary<string, FishData>();
 
         internal static new IModHelper Helper;
         internal static new IMonitor Monitor;
@@ -16,16 +18,15 @@ namespace FishInfo
 
         public override void Entry(IModHelper helper)
         {
-            ModEntry.Helper = helper;
-            ModEntry.Monitor = base.Monitor;
-
+            Helper = helper;
+            Monitor = base.Monitor;
             LoadConfig();
             Patches.DoPatches();
             
             Helper.Events.GameLoop.DayStarted += LoadData;
         }
 
-        private static FishData GetOrCreateData(int fishID)
+        internal static FishData GetOrCreateData(string fishID)
         {
             if (FishInfo.TryGetValue(fishID, out FishData data))
             {
@@ -50,11 +51,100 @@ namespace FishInfo
             Config = ReadConfig;
         }
 
+
         public void LoadData(object sender, EventArgs e)
         {
             FishInfo.Clear();
 
-            Dictionary<string, string> LocationData = Helper.Content.Load<Dictionary<string, string>>("Data\\Locations", ContentSource.GameContent);
+            Dictionary<string, LocationData> GameLocationData = DataLoader.Locations(Game1.content);
+            Dictionary<string, string> GameFishData = DataLoader.Fish(Game1.content);
+            string locationName;
+            foreach (var locData in GameLocationData)
+            {
+                locationName = locData.Key;
+                if (locationName == "fishingGame" || locationName == "Temp") { continue; } //Ignore... whatever these are. I think fishingGame is the Autumn Fair, but Temp???
+
+                foreach (var fish in locData.Value.Fish)
+                {
+                    if(fish.ItemId == null)
+                    {
+                        continue;
+                    }
+                    FishData fishData = GetOrCreateData(fish.ItemId);
+                    //Getting Season info per location
+                    if (fish.Season.HasValue)
+                    {
+                        fishData.AddSeasonForLocation(locationName, fish.Season.Value.ToFishSeason());
+                    }
+                    if (fish.Condition != null)
+                    {
+                        var conditionData = GameStateQuery.Parse(fish.Condition);
+                        foreach (var condition in conditionData)
+                        {
+                            var splitQuery = condition.Query;
+                            if (splitQuery[0] == "LOCATION_SEASON")
+                            {
+                                for(int i = 2;i < splitQuery.Length; i++)
+                                {
+                                    fishData.AddSeasonForLocation(locationName, Utils.StringToSeason(splitQuery[i]));
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        fishData.AddSeasonForLocation(locationName, Season.All_seasons);
+                    }
+                    //Time and weather info/crabpot info
+                    if (!fishData.FishDataProcessed)
+                    {
+                        string fishNumber = fish.ItemId[3..];
+                        GameFishData.TryGetValue(fishNumber, out string fishDataString);
+                        if (fishDataString == null)
+                        {
+                            continue;
+                        }
+                        if(Game1.objectData.TryGetValue(fishNumber, out ObjectData data))
+                        {
+                            fishData.FishName = data.Name;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                        string[] fishDataFromFile = ArgUtility.SplitQuoteAware(fishDataString, '/');
+                        if (fishDataFromFile[1].ToLower() == "trap")
+                        {
+                            fishData.SetCrabPot(true);
+                            fishData.AddSeasonForLocation(fishDataFromFile[1], Season.None);
+                            fishData.FishDataProcessed = true;
+                        }
+                        else
+                        {
+                            string[] times = ArgUtility.SplitBySpace(fishDataFromFile[5]);
+                            for (int i = 0; i < times.Length; i += 2)
+                            {
+                                fishData.AddTimes(int.Parse(times[i]), int.Parse(times[i + 1]));
+                            }
+                            fishData.AddWeather(Utils.StringToWeather(fishDataFromFile[7]));
+
+                            fishData.FishDataProcessed = true;
+                        }
+                    }
+                    
+                }
+            }
+            FishData octTest = GetOrCreateData("(O)149");
+        }
+
+        /*
+        public void LoadData15(object sender, EventArgs e)
+        {
+            FishInfo.Clear();
+
+            
+            
+            Dictionary<string, string> LocationData = Helper.GameContent.Load<Dictionary<string, string>>("Data/Locations");
             foreach (KeyValuePair<string, string> locdata in LocationData)
             {
                 string locationName = locdata.Key;
@@ -75,7 +165,7 @@ namespace FishInfo
                  * 
                  * 
                  * 
-                 */
+                 * /
                  
                 string[] seasonData;
                 for (int i = 4; i <= 7; i++)
@@ -194,6 +284,7 @@ namespace FishInfo
                 }
             }
         }
+            */
     }
 }
  

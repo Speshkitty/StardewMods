@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace FishInfo
 
         internal string FishName { get; set; }
         internal bool IsCrabPot = false;
+        internal bool FishDataProcessed { get; set; } = false;
 
         private string infoLocation = "";
         private string infoWeather = "";
