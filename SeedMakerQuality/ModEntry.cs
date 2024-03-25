@@ -4,20 +4,26 @@ using StardewValley.GameData.Machines;
 using StardewValley;
 using Microsoft.Xna.Framework;
 using StardewValley.GameData.Crops;
-using static System.Net.Mime.MediaTypeNames;
+using SObject = StardewValley.Object;
+using System;
+using System.Collections.Generic;
 
 namespace SeedMakerQuality
 {
     public class ModEntry : Mod
     {
         internal static ModConfig? Config { get; private set; }
+        internal new static IMonitor? Monitor { get; private set; }
 
         public override void Entry(IModHelper helper)
         {
+            Monitor = base.Monitor;
             Harmony harmony = new (ModManifest.Name);
             Config = LoadConfig();
 
-            harmony.PatchAll();
+            //harmony.PatchAll();
+            harmony.Patch(typeof(SObject).GetMethod("OutputSeedMaker"),
+                postfix: new HarmonyMethod(typeof(Patch), "Postfix"));
         }
         private ModConfig LoadConfig()
         {
@@ -32,11 +38,12 @@ namespace SeedMakerQuality
         }
     }
 
-    [HarmonyPatch(typeof(StardewValley.Object), nameof(StardewValley.Object.OutputSeedMaker))]
+    [HarmonyPatch(typeof(SObject), nameof(SObject.OutputSeedMaker))]
     public class Patch
     {
-        public static void Postfix(ref Item __result, StardewValley.Object machine, Item inputItem, bool probe, MachineItemOutput outputData, int? overrideMinutesUntilReady)
+        public static void Postfix(ref Item __result, SObject machine, Item inputItem, bool probe, MachineItemOutput outputData, int? overrideMinutesUntilReady)
         {
+
             if(__result == null) { return; }
             var configData = ModEntry.Config!.GetAmountForQuality(inputItem.Quality);
 
@@ -57,11 +64,11 @@ namespace SeedMakerQuality
 
             if (__result.Name == "Mixed Seeds" && !configData.AllowMixed)
             {
-                __result = new StardewValley.Object(SeedItem, random.Next(configData.MinAmount, configData.MaxAmount));
+                __result = new SObject(SeedItem, random.Next(configData.MinAmount, configData.MaxAmount));
             }
             else if(__result.Name == "Ancient Seeds" && !configData.AllowAncient && inputItem.Name != "Ancient Fruit")
             {
-                __result = new StardewValley.Object(SeedItem, random.Next(configData.MinAmount, configData.MaxAmount));
+                __result = new SObject(SeedItem, random.Next(configData.MinAmount, configData.MaxAmount));
             }
             else
             {
