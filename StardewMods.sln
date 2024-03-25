@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1231
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishInfo", "FishInfo\FishInfo.csproj", "{A3FFC180-B996-49F5-98B3-F93CD9965CD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FishInfo", "FishInfo\FishInfo.csproj", "{A3FFC180-B996-49F5-98B3-F93CD9965CD9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StardewModTemplate", "StardewModTemplate\StardewModTemplate.csproj", "{49B56A7B-F263-4FEE-B660-5EE28074BCFD}"
 EndProject
@@ -16,6 +16,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlimeWaterFiller", "SlimeWaterFiller\SlimeWaterFiller.csproj", "{C12828AD-ACB8-4402-A2C3-37C6678AE8E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImprovedBundleRemixer", "ImprovedBundleRemixer\ImprovedBundleRemixer.csproj", "{85AB0E98-4E2E-4B00-AED1-0D8F577826CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayersItemHelper", "DataLayersItemHelper\DataLayersItemHelper.csproj", "{DA34F0B3-B18C-4DDF-ADBB-07E913AAA5F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "[CP] UpgradableSprinklers", "[CP] UpgradableSprinklers\[CP] UpgradableSprinklers.csproj", "{60D9C03D-15CE-4D5C-BD45-49B69B5EE6F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StardewContentPatcherModTemplate", "StardewContentPatcherMod\StardewContentPatcherModTemplate.csproj", "{9B373BE7-546B-48B8-8D0A-580E44DB9024}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeshkittyDataCore", "SpeshkittyDataCore\SpeshkittyDataCore.csproj", "{EEC5A003-CE57-4A47-B5C3-31355B3C18A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeedMakerQuality", "SeedMakerQuality\SeedMakerQuality.csproj", "{686195BD-CFCE-4E7F-BF76-4F02587379E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +61,26 @@ Global
 		{85AB0E98-4E2E-4B00-AED1-0D8F577826CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85AB0E98-4E2E-4B00-AED1-0D8F577826CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85AB0E98-4E2E-4B00-AED1-0D8F577826CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA34F0B3-B18C-4DDF-ADBB-07E913AAA5F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA34F0B3-B18C-4DDF-ADBB-07E913AAA5F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA34F0B3-B18C-4DDF-ADBB-07E913AAA5F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA34F0B3-B18C-4DDF-ADBB-07E913AAA5F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60D9C03D-15CE-4D5C-BD45-49B69B5EE6F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60D9C03D-15CE-4D5C-BD45-49B69B5EE6F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60D9C03D-15CE-4D5C-BD45-49B69B5EE6F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60D9C03D-15CE-4D5C-BD45-49B69B5EE6F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B373BE7-546B-48B8-8D0A-580E44DB9024}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B373BE7-546B-48B8-8D0A-580E44DB9024}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B373BE7-546B-48B8-8D0A-580E44DB9024}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B373BE7-546B-48B8-8D0A-580E44DB9024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEC5A003-CE57-4A47-B5C3-31355B3C18A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEC5A003-CE57-4A47-B5C3-31355B3C18A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEC5A003-CE57-4A47-B5C3-31355B3C18A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEC5A003-CE57-4A47-B5C3-31355B3C18A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{686195BD-CFCE-4E7F-BF76-4F02587379E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{686195BD-CFCE-4E7F-BF76-4F02587379E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{686195BD-CFCE-4E7F-BF76-4F02587379E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{686195BD-CFCE-4E7F-BF76-4F02587379E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
