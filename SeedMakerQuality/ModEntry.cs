@@ -7,6 +7,7 @@ using StardewValley.GameData.Crops;
 using SObject = StardewValley.Object;
 using System;
 using System.Collections.Generic;
+using GenericModConfigMenu;
 
 namespace SeedMakerQuality
 {
@@ -21,10 +22,66 @@ namespace SeedMakerQuality
             Harmony harmony = new (ModManifest.Name);
             Config = LoadConfig();
 
+            //Set up GenericModConfigMenu integration
+            helper.Events.GameLoop.GameLaunched += (s, e) =>
+            {
+                var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+                if (configMenu is null)
+                    return;
+
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                    );
+
+                CreateConfigSection("normal", configMenu, 0);
+                CreateConfigSection("silver", configMenu, 1);
+                CreateConfigSection("gold", configMenu, 2);
+                CreateConfigSection("iridium", configMenu, 4);
+
+            };
+
             //harmony.PatchAll();
             harmony.Patch(typeof(SObject).GetMethod("OutputSeedMaker"),
                 postfix: new HarmonyMethod(typeof(Patch), "Postfix"));
         }
+
+        private void CreateConfigSection(string header, IGenericModConfigMenuApi configMenu, int quality)
+        {
+            configMenu.AddSectionTitle(mod: ModManifest,
+                text: () => Helper.Translation.Get($"title.quality.{header}")
+                );
+
+            configMenu.AddNumberOption(mod: ModManifest,
+                getValue: () => Config!.GetAmountForQuality(quality).MinAmount,
+                setValue: value => Config!.GetAmountForQuality(quality).MinAmount = value,
+                name: () => Helper.Translation.Get("option.amount.minimum")
+                );
+
+            configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    getValue: () => Config!.GetAmountForQuality(quality).MaxAmount,
+                    setValue: value => Config!.GetAmountForQuality(quality).MaxAmount = value,
+                    name: () => Helper.Translation.Get("option.amount.maximum")
+                    );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                getValue: () => Config!.GetAmountForQuality(quality).AllowMixed,
+                setValue: value => Config!.GetAmountForQuality(quality).AllowMixed = value,
+                name: () => Helper.Translation.Get("option.canmake.mixed")
+                );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                getValue: () => Config!.GetAmountForQuality(quality).AllowAncient,
+                setValue: value => Config!.GetAmountForQuality(quality).AllowAncient = value,
+                name: () => Helper.Translation.Get("option.canmake.ancient"),
+                tooltip: () => Helper.Translation.Get("option.canmake.ancient.tooltip")
+                );
+        }
+
         private ModConfig LoadConfig()
         {
             ModConfig ReadConfig = Helper.ReadConfig<ModConfig>();
