@@ -3,6 +3,8 @@ using StardewModdingAPI;
 using StardewValley.GameData.Machines;
 using StardewValley;
 using Microsoft.Xna.Framework;
+using StardewValley.GameData.Crops;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SeedMakerQuality
 {
@@ -37,18 +39,32 @@ namespace SeedMakerQuality
         {
             if(__result == null) { return; }
             var configData = ModEntry.Config!.GetAmountForQuality(inputItem.Quality);
+
+            string SeedItem = "";
+            Vector2 value = machine.TileLocation;
+            Random random = Utility.CreateDaySaveRandom(value.X, value.Y * 77f, Game1.timeOfDay);
+
+            foreach (KeyValuePair<string, CropData> cropDatum in Game1.cropData)
+            {
+                if (ItemRegistry.HasItemId(inputItem, cropDatum.Value.HarvestItemId))
+                {
+                    SeedItem = cropDatum.Key;
+                    break;
+                }
+            }
+
+            if(string.IsNullOrWhiteSpace(SeedItem)) { return; }
+
             if (__result.Name == "Mixed Seeds" && !configData.AllowMixed)
             {
-                __result = StardewValley.Object.OutputSeedMaker(machine, inputItem, probe, outputData, out overrideMinutesUntilReady);
+                __result = new StardewValley.Object(SeedItem, random.Next(configData.MinAmount, configData.MaxAmount));
             }
             else if(__result.Name == "Ancient Seeds" && !configData.AllowAncient && inputItem.Name != "Ancient Fruit")
             {
-                __result = StardewValley.Object.OutputSeedMaker(machine, inputItem, probe, outputData, out overrideMinutesUntilReady);
+                __result = new StardewValley.Object(SeedItem, random.Next(configData.MinAmount, configData.MaxAmount));
             }
             else
             {
-                Vector2 value = machine.TileLocation;
-                Random random = Utility.CreateDaySaveRandom(value.X, value.Y * 77f, Game1.timeOfDay);
                 __result.Stack = random.Next(configData.MinAmount, configData.MaxAmount);
             }
         }
