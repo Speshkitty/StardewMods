@@ -34,12 +34,12 @@ namespace SeedMakerQuality
                     reset: () => Config = new ModConfig(),
                     save: () => Helper.WriteConfig(Config)
                     );
-
+                
                 CreateConfigSection("normal", configMenu, 0);
                 CreateConfigSection("silver", configMenu, 1);
                 CreateConfigSection("gold", configMenu, 2);
                 CreateConfigSection("iridium", configMenu, 4);
-
+                
             };
 
             //harmony.PatchAll();
