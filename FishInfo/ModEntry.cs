@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using GenericModConfigMenu;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Locations;
 using StardewValley.GameData.Objects;
@@ -24,6 +25,63 @@ namespace FishInfo
             Patches.DoPatches();
             
             Helper.Events.GameLoop.DayStarted += LoadData;
+
+            helper.Events.GameLoop.GameLaunched += (s, e) =>
+            {
+                var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+                if (configMenu is null)
+                    return;
+
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                    );
+
+                CreateConfigSection("caught", configMenu, Config.CaughtFishData);
+                CreateConfigSection("uncaught", configMenu, Config.UncaughtFishData);
+            };
+        }
+
+        private void CreateConfigSection(string header, IGenericModConfigMenuApi configMenu, ShowFishData dataBean)
+        {
+            configMenu.AddSectionTitle(mod: ModManifest,
+                text: () => Helper.Translation.Get($"config.header.{header}")
+                );
+
+            configMenu.AddBoolOption(mod: ModManifest,
+                getValue: () => dataBean.AlwaysShowName,
+                setValue: value => dataBean.AlwaysShowName = value,
+                name: () => Helper.Translation.Get("option.display.name")
+                );
+
+            configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    getValue: () => dataBean.AlwaysShowLocation,
+                    setValue: value => dataBean.AlwaysShowLocation = value,
+                    name: () => Helper.Translation.Get("option.display.location")
+                    );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                getValue: () => dataBean.AlwaysShowSeason,
+                setValue: value => dataBean.AlwaysShowSeason = value,
+                name: () => Helper.Translation.Get("option.display.season")
+                );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                getValue: () => dataBean.AlwaysShowTime,
+                setValue: value => dataBean.AlwaysShowTime = value,
+                name: () => Helper.Translation.Get("option.display.time")
+                );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                getValue: () => dataBean.AlwaysShowWeather,
+                setValue: value => dataBean.AlwaysShowWeather = value,
+                name: () => Helper.Translation.Get("option.display.weather")
+                );
         }
 
         internal static FishData GetOrCreateData(string fishID)
@@ -59,6 +117,13 @@ namespace FishInfo
             Dictionary<string, LocationData> GameLocationData = DataLoader.Locations(Game1.content);
             Dictionary<string, string> GameFishData = DataLoader.Fish(Game1.content);
             string locationName;
+            
+            FishData fishData = GetOrCreateData("(O)Goby");
+            fishData.FishName = new StardewValley.Object("Goby", 1).DisplayName;
+            fishData.LocationData.Add("forestwaterfall", Season.All_seasons);
+            fishData.AddWeather(Weather.Rain | Weather.Sun);
+            fishData.AddTimes(600, 2600);
+            
             foreach (var locData in GameLocationData)
             {
                 locationName = locData.Key;
@@ -70,7 +135,19 @@ namespace FishInfo
                     {
                         continue;
                     }
-                    FishData fishData = GetOrCreateData(fish.ItemId);
+                    
+                    fishData = GetOrCreateData(fish.ItemId);
+
+                    if (fish.ItemId == "(O)CaveJelly" || fish.ItemId == "(O)RiverJelly" || fish.ItemId == "(O)SeaJelly")
+                    {
+                        fishData.FishName = new StardewValley.Object(fish.ItemId[3..], 1).DisplayName;
+                        if (fishData.CatchingTimes.Count == 0)
+                        {
+                            fishData.AddTimes(600, 2600);
+                        }
+                        fishData.AddWeather(Weather.Rain | Weather.Sun);
+                    }
+
                     //Getting Season info per location
                     if (fish.Season.HasValue)
                     {
@@ -106,7 +183,7 @@ namespace FishInfo
                         }
                         if(Game1.objectData.TryGetValue(fishNumber, out ObjectData data))
                         {
-                            fishData.FishName = data.Name;
+                            fishData.FishName = new StardewValley.Object(fish.ItemId[3..], 1).DisplayName; 
                         }
                         else
                         {

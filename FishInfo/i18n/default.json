@@ -6,6 +6,7 @@
   "location.freshwater": "Freshwater",
   "location.forestriver": "Forest River",
   "location.forestpond": "Forest Pond",
+  "location.forestwaterfall": "Forest Waterfall",
   "location.bugland": "Mutant Bug Lair",
   "location.witchswamp": "Witch's Swamp",
   "season.prefix": "Season",
@@ -18,5 +19,12 @@
   "weather.prefix": "Weather",
   "weather.sun": "Sun",
   "weather.rain": "Rain",
-  "weather.none": "No Entry Found"
+  "weather.none": "No Entry Found",
+  "config.header.caught": "Caught Fish",
+  "config.header.uncaught": "Uncaught Fish",
+  "option.display.name": "Always display name",
+  "option.display.location": "Always display location",
+  "option.display.season": "Always display season",
+  "option.display.time": "Always display time",
+  "option.display.weather": "Always display weather"
 }

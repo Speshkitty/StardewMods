@@ -6,9 +6,11 @@ using StardewValley;
 using StardewValley.GameData.Objects;
 using StardewValley.Menus;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace FishInfo
 {
@@ -19,12 +21,6 @@ namespace FishInfo
             Harmony harmony = new Harmony("speshkitty.fishinfo.harmony");
 
             harmony.PatchAll();
-
-            //harmony.Patch(typeof(CollectionsPage).GetMethod("performHoverAction", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly),
-            //    postfix: new HarmonyMethod(typeof(CollectionsPage_PerformHoverAction).GetMethod("Postfix")));
-
-            //harmony.Patch(typeof(CollectionsPage).GetMethod("createDescription", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly),
-            //    );
             
         }
 
@@ -59,7 +55,7 @@ namespace FishInfo
                             {
                                 fishData = ModEntry.GetOrCreateData(FishID);
                                 string[] data = ArgUtility.SplitQuoteAware(tempFishData, '/');
-                                fishData.FishName = data[0];
+                                fishData.FishName = new StardewValley.Object(FishID[3..], 1).DisplayName;
                                 if (data[1] == "trap")
                                 {
                                     fishData.IsCrabPot= true;

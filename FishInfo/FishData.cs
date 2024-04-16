@@ -121,6 +121,9 @@ namespace FishInfo
         }
         private void CreateSeasonsWithLocations()
         {
+            if (FishName == "Goby") 
+            { 
+            }
             StringBuilder sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine("Caught in:");
