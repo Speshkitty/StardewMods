@@ -1,4 +1,6 @@
-﻿namespace FishInfo
+﻿using System;
+
+namespace FishInfo
 {
     internal class TimePair
     {
@@ -9,6 +11,18 @@
         {
             this.StartTime = StartTime;
             this.EndTime = EndTime;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TimePair pair &&
+                   StartTime == pair.StartTime &&
+                   EndTime == pair.EndTime;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(StartTime, EndTime);
         }
     }
 }
