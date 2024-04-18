@@ -1,0 +1,10 @@
+{
+  "Name": "Emily 10 heart fixer",
+  "Description": "Fixes Emily's 10 heart event for Stardew 1.6.3",
+  "Author": "Speshkitty",
+  "EntryDLL": "Emily10HeartFixer.dll",
+  "MinimumApiVersion": "4.0.0",
+  "Version": "1.0.0",
+  "UpdateKeys": [ "Nexus:22705" ],
+  "UniqueID": "speshkitty.Emily10HeartFixer"
+}

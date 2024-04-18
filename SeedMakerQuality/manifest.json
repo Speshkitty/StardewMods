@@ -6,5 +6,11 @@
   "UniqueID": "speshkitty.seedmakerquality",
   "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [ "Nexus:21000" ],
-  "EntryDLL": "SeedMakerQuality.dll"
+  "EntryDLL": "SeedMakerQuality.dll",
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    }
+  ]
 }
