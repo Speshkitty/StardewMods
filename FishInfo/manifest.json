@@ -1,7 +1,7 @@
 {
   "Name": "Fish Info",
   "Author": "Speshkitty",
-  "Version": "2.0.2",
+  "Version": "2.1.0",
   "Description": "Adds information about where fish can be caught to the collections page",
   "UniqueID": "speshkitty.fishinfo",
   "MinimumApiVersion": "4.0.0",

@@ -132,7 +132,7 @@ namespace FishInfo
             Dictionary<string, string> GameFishData = DataLoader.Fish(Game1.content);
             string locationName;
 
-            SpecialHandledFish("(O)Goby", Weather.Rain | Weather.Sun, new Tuple<int, int>[] { new(600, 2600) }, new Tuple<string, Season>[] { new("forestwaterfall", Season.All_seasons) });
+            //SpecialHandledFish("(O)Goby", Weather.Rain | Weather.Sun, new Tuple<int, int>[] { new(600, 2600) }, new Tuple<string, Season>[] { new("forestwaterfall", Season.All_seasons) });
             SpecialHandledFish("(O)158", Weather.Rain | Weather.Sun, new Tuple<int, int>[] { new(600, 2600) }, new Tuple<string, Season>[] { new("mines20", Season.All_seasons) }); //Stonefish
             SpecialHandledFish("(O)161", Weather.Rain | Weather.Sun, new Tuple<int, int>[] { new(600, 2600) }, new Tuple<string, Season>[] { new("mines60", Season.All_seasons) }); //Ice Pip
             SpecialHandledFish("(O)162", Weather.Rain | Weather.Sun, new Tuple<int, int>[] { new(600, 2600) }, new Tuple<string, Season>[] { new("mines100", Season.All_seasons) }); //Lava Eel
@@ -162,10 +162,22 @@ namespace FishInfo
                         fishData.AddWeather(Weather.Rain | Weather.Sun);
                     }
 
+                    string locationWithArea = locationName;
+
+                    if(fish.ItemId == "(O)Goby")
+                    {
+                        locationWithArea = locationName + "waterfall";
+                    }
+                    
+                    if(!string.IsNullOrWhiteSpace(fish.FishAreaId))
+                    {
+                        locationWithArea = locationName + fish.FishAreaId;
+                    }
+
                     //Getting Season info per location
                     if (fish.Season.HasValue)
                     {
-                        fishData.AddSeasonForLocation(locationName, fish.Season.Value.ToFishSeason());
+                        fishData.AddSeasonForLocation(locationWithArea, fish.Season.Value.ToFishSeason());
                     }
                     else if (fish.Condition != null)
                     {
@@ -177,14 +189,14 @@ namespace FishInfo
                             {
                                 for(int i = 2;i < splitQuery.Length; i++)
                                 {
-                                    fishData.AddSeasonForLocation(locationName, Utils.StringToSeason(splitQuery[i]));
+                                    fishData.AddSeasonForLocation(locationWithArea, Utils.StringToSeason(splitQuery[i]));
                                 }
                             }
                         }
                     }
                     else
                     {
-                        fishData.AddSeasonForLocation(locationName, Season.All_seasons);
+                        fishData.AddSeasonForLocation(locationWithArea, Season.All_seasons);
                     }
                     //Time and weather info/crabpot info
                     if (!fishData.FishDataProcessed)
