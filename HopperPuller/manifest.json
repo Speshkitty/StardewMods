@@ -1,0 +1,11 @@
+{
+  "Name": "Hopper Puller",
+  "Author": "Speshkitty",
+  "Version": "1.0.0",
+  "Description": "Hopper Puller",
+  "UniqueID": "speshkitty.HopperPuller",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:???" ],
+  "EntryDLL": "HopperPuller.dll"
+  
+}
