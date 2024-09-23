@@ -18,6 +18,8 @@ namespace BaitMakerQuality
             helper.Events.GameLoop.GameLaunched += (s, e) =>
             {
                 var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+                var data = DataLoader.Machines(Game1.content);
+
                 if (configMenu is null)
                     return;
 
@@ -31,11 +33,9 @@ namespace BaitMakerQuality
                 CreateConfigSection("silver", configMenu, Config.SilverQualityInput);
                 CreateConfigSection("gold", configMenu, Config.GoldQualityInput);
                 CreateConfigSection("iridium", configMenu, Config.IridiumQualityInput);
-
             };
 
             helper.Events.Content.AssetRequested += Content_AssetRequested;
-            var data = DataLoader.Machines(Game1.content);
         }
 
         private void Content_AssetRequested(object? sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
